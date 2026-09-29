@@ -7,7 +7,7 @@ A database-driven flatmate matching system where households can list
 available rooms and prospective flatmates can search and apply.
 
 ## Team
-- David Yijian Mei
+- Yijian Mei (David)
 - Max
 - Yu-Han Chang (John)
 
