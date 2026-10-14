@@ -1,0 +1,17 @@
+{
+  "room_type": "PRIVATE",
+  "property_type": "APARTMENT",
+  "number_rooms": 3,
+  "is_furnished": true,
+  "has_ensuite": false,
+  "car_spots": 0,
+  "num_housemates": 2,
+  "smoking_policy": "NOT_ALLOWED",
+  "pet_policy": "NOT_ALLOWED",
+  "description": "Synthetic example of a private room near campus.",
+  "street_number": "14",
+  "street_name": "Example Street",
+  "suburb": "Newtown",
+  "state": "NSW",
+  "postcode": "2042"
+}

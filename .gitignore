@@ -216,3 +216,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project-local temporary files and credential variants
+tmp/
+.env.*
+!.env.example

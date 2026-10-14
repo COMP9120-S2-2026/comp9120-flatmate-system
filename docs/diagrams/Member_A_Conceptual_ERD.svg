@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1200" viewBox="0 0 1700 1200" role="img" aria-labelledby="title desc">
+<title id="title">Member A conceptual Room and Listing model</title>
+<desc id="desc">Three entities in COMP9120 notation; User is an integration reference. Arrows point from constrained entities to relationship diamonds; thick lines denote total participation. See the accompanying PDF notes for draft assumptions.</desc>
+<rect width="1700" height="1200" fill="white"/>
+<g stroke="#17212B" fill="none" stroke-linejoin="miter">
+<polyline points="525,620 740,620" stroke-width="3.8"/>
+<polyline points="1155,620 960,620" stroke-width="3.8"/>
+<polygon points="960,620 971.0,614.5 971.0,625.5" fill="#17212B" stroke="none"/>
+<polyline points="1250,220 1250,348" stroke-width="1.3"/>
+<polyline points="1250,590 1250,452" stroke-width="3.8"/>
+<polygon points="1250,452 1255.5,463.0 1244.5,463.0" fill="#17212B" stroke="none"/>
+<polyline points="430.0,590.0 430.0,179.0" stroke-width="1.3"/>
+<polyline points="410,590 410,240 275.0,240" stroke-width="1.3"/>
+<polyline points="390,590 390,330 275.0,330" stroke-width="1.3"/>
+<polyline points="370,590 370,420 275.0,420" stroke-width="1.3"/>
+<polyline points="350,590 350,510 275.0,510" stroke-width="1.3"/>
+<polyline points="335.0,620.0 275.0,620.0" stroke-width="1.3"/>
+<polyline points="335,640 310,640 310,730 275.0,730" stroke-width="1.3"/>
+<polyline points="335,640 330,640 330,830 275.0,830" stroke-width="1.3"/>
+<polyline points="450,590 450,200 585.0,200" stroke-width="1.3"/>
+<polyline points="470,590 470,300 585.0,300" stroke-width="1.3"/>
+<polyline points="490,590 490,400 585.0,400" stroke-width="1.3"/>
+<polyline points="510,590 510,500 585.0,500" stroke-width="1.3"/>
+<polyline points="430.0,650.0 430.0,906.0" stroke-width="1.3"/>
+<polyline points="384.0800172455014,951.3199919931601 197.7688588038959,1037.8216012696198" stroke-width="1.3"/>
+<polyline points="428.5883759610617,953.9976086619519 421.41167467419416,1076.0015305386994" stroke-width="1.3"/>
+<polyline points="465.6178177193249,952.4260333788342 664.6237800903269,1077.7260837605763" stroke-width="1.3"/>
+<polyline points="499.9928582359657,947.1411081394202 853.7123100414855,1033.7662800101598" stroke-width="1.3"/>
+<polyline points="527.2302374804256,935.6094367777168 857.38429841196,954.6567864468439" stroke-width="1.3"/>
+<polyline points="1250.0,160.0 1250.0,134.0" stroke-width="1.3"/>
+<polyline points="1315.0,590.0 1462.9882421417242,521.6977343961273" stroke-width="1.3"/>
+<polyline points="1345.0,620.0 1385.0,620.0" stroke-width="1.3"/>
+<polyline points="1320.909090909091,650.0 1458.3432494026968,708.145220901141" stroke-width="1.3"/>
+<polyline points="1283.9130434782608,650.0 1483.4868675443347,826.5460751353731" stroke-width="1.3"/>
+<polyline points="1250.0,650.0 1250.0,916.0" stroke-width="1.3"/>
+</g>
+<g fill="white" stroke="#17212B" stroke-width="1.7">
+<rect x="335.0" y="590.0" width="190" height="60"/>
+</g>
+<text x="430" y="631.55" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="35" font-weight="bold" text-anchor="middle">Room</text>
+<g fill="white" stroke="#17212B" stroke-width="1.7">
+<rect x="1155.0" y="590.0" width="190" height="60"/>
+</g>
+<text x="1250" y="631.55" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="35" font-weight="bold" text-anchor="middle">Listing</text>
+<g fill="white" stroke="#17212B" stroke-width="1.7">
+<rect x="1155.0" y="160.0" width="190" height="60"/>
+</g>
+<text x="1250" y="201.55" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="35" font-weight="bold" text-anchor="middle">User</text>
+<g fill="white" stroke="#17212B" stroke-width="1.7">
+<polygon points="850,568.0 960.0,620 850,672.0 740.0,620"/>
+</g>
+<text x="850" y="628.91" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="27" font-weight="normal" text-anchor="middle">Advertises</text>
+<g fill="white" stroke="#17212B" stroke-width="1.7">
+<polygon points="1250,348.0 1345.0,400 1250,452.0 1155.0,400"/>
+</g>
+<text x="1250" y="408.91" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="27" font-weight="normal" text-anchor="middle">Creates</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="430" cy="155" rx="95.0" ry="24.0"/>
+</g>
+<text x="430" y="164.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle" text-decoration="underline">room_id</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="240" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="249.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">room_type</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="330" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="339.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">property_type</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="420" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="429.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">number_rooms</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="510" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="519.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">is_furnished</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="620" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="629.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">has_ensuite</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="730" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="739.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">car_spots</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="830" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="839.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">num_housemates</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="710" cy="200" rx="125.0" ry="24.0"/>
+</g>
+<text x="710" y="209.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">smoking_policy</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="710" cy="300" rx="125.0" ry="24.0"/>
+</g>
+<text x="710" y="309.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">pet_policy</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="710" cy="400" rx="125.0" ry="24.0"/>
+</g>
+<text x="710" y="409.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">description</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="710" cy="500" rx="125.0" ry="24.0"/>
+</g>
+<text x="710" y="509.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">allocation_status</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="430" cy="930" rx="100.0" ry="24.0"/>
+</g>
+<text x="430" y="939.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">Address</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="150" cy="1060" rx="125.0" ry="24.0"/>
+</g>
+<text x="150" y="1069.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">street_number</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="420" cy="1100" rx="125.0" ry="24.0"/>
+</g>
+<text x="420" y="1109.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">street_name</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="700" cy="1100" rx="95.0" ry="24.0"/>
+</g>
+<text x="700" y="1109.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">suburb</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="920" cy="1050" rx="90.0" ry="24.0"/>
+</g>
+<text x="920" y="1059.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">state</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="950" cy="960" rx="95.0" ry="24.0"/>
+</g>
+<text x="950" y="969.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">postcode</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="1250" cy="110" rx="95.0" ry="24.0"/>
+</g>
+<text x="1250" y="119.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle" text-decoration="underline">user_id</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="1510" cy="500" rx="110.0" ry="24.0"/>
+</g>
+<text x="1510" y="509.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle" text-decoration="underline">listing_id</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="1510" cy="620" rx="125.0" ry="24.0"/>
+</g>
+<text x="1510" y="629.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">weekly_rent</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="1510" cy="730" rx="125.0" ry="24.0"/>
+</g>
+<text x="1510" y="739.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">available_from</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="1510" cy="850" rx="125.0" ry="24.0"/>
+</g>
+<text x="1510" y="859.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">listing_date</text>
+<g fill="white" stroke="#17212B" stroke-width="1.1">
+<ellipse cx="1250" cy="940" rx="95.0" ry="24.0"/>
+</g>
+<text x="1250" y="949.24" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="28" font-weight="normal" text-anchor="middle">status</text>
+<text x="40" y="55" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="38" font-weight="bold" text-anchor="start">Member A Conceptual Model</text>
+<text x="40" y="94" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="normal" text-anchor="start">Room and Listing contribution - COMP9120 lecture notation</text>
+<text x="620" y="596" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="27" font-weight="normal" text-anchor="start">1..*</text>
+<text x="1060" y="596" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="27" font-weight="normal" text-anchor="start">1..1</text>
+<text x="1280" y="310" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="27" font-weight="normal" text-anchor="start">0..*</text>
+<text x="1280" y="535" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="27" font-weight="normal" text-anchor="start">1..1</text>
+<text x="40" y="1170" fill="#17212B" font-family="Arial,Helvetica,sans-serif" font-size="24" font-weight="normal" text-anchor="start">Underlined = key | Thick = total participation | Arrow into diamond = maximum one</text>
+</svg>
