@@ -1,5 +1,0 @@
--- MEMBER C TO COMPLETE: account extensions, application and acceptance SQL/tests.
--- Reuse the app_user contract; do not recreate it during module integration.
--- Application acceptance must call Member A's state helper inside the SAME
--- outer transaction as applicant acceptance and rejection of other applicants.
--- The locking order and required tests are in HANDOFF.md.
