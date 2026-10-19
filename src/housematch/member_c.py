@@ -54,12 +54,8 @@ def _lock_application(conn, application_id):
 
 
 def withdraw_application(conn, user_id, application_id):
-    with conn.transaction():
-        _, application = _lock_application(conn, application_id)
-        if application['user_id'] != user_id:
-            raise BusinessRuleError('Only the applicant may withdraw this application.')
-        return conn.execute("UPDATE application SET status='WITHDRAWN' WHERE application_id=%s RETURNING *",
-                            (application_id,)).fetchone()
+    # Keep a clear failure for older callers without changing the agreed status domain.
+    raise BusinessRuleError('Withdrawal is not supported by the current schema; no data were changed.')
 
 
 def reject_application(conn, advertiser_user_id, application_id):

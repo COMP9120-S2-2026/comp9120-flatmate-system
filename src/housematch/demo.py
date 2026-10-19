@@ -6,7 +6,7 @@ def sample_room(suburb='Newtown',postcode='2042'):
     return dict(room_type='Private',num_roommates=0,is_furnished=True,has_ensuite=False,
                 description='Synthetic example room',street_number='12',street_name='Example Street',
                 suburb=suburb,state='NSW',postcode=postcode,unit_number=None,property_type='Apartment',
-                total_rooms=3,car_spots=0,smoking_policy='No smoking',pet_policy=False)
+                total_rooms=3,car_spots=0,smoking_policy='No smoking',pet_friendly=False)
 
 
 def seed_demo(conn):

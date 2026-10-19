@@ -1,29 +1,27 @@
-# Integrated team handoff
+# Compatibility-only handoff
 
-## Agreed baseline
+This revision aligns the older A/C modules with Max's shared database without changing its rules.
 
-Use the report's page 7 ten-table schema, including PROPERTY_CHARACTERISTICS. The separate nine-table spreadsheet must be reconciled before submission. See docs/SCHEMA_ALIGNMENT.md.
+## Fixed
 
-## Suggested review ownership
+- Move property/address fields out of room queries and inserts; use property_characteristics.
+- Supply listing_date, status and num_housemates when inserting listings.
+- Remove allocation_status and FILLED assumptions.
+- Read dictionary query results consistently.
+- Use the root schema/triggers and original sample data for run.py setup.
+- Follow the existing SQL acceptance workflow inside one Python transaction.
+- Refuse unsupported withdrawal without changing the application status domain.
 
-These are review areas, not claims about who originally authored the code. Confirm the A/B/C mapping with the group.
+## Preserved
 
-| Area | Review responsibilities |
-| --- | --- |
-| A — Property, room and listing | Verify property sharing, room capacity, advertiser ownership, publish/relist and VS Code/pgAdmin setup |
-| B — Preferences and viewings | Verify profile matching, suburb rules, saved listings, booking history and same-listing rescheduling |
-| C — Applications and integration | Verify submit/withdraw/reject/accept, owner checks, atomic acceptance and concurrency evidence |
-| Everyone | Reconcile ERD/schema/report, review the integrated diff, reproduce tests and prepare the demonstration |
+Max's root SQL files and housematch_cli.py are unchanged from main commit 70e27bc. His menu still has unfinished options; this patch does not implement those extra features. All original SQL constraints and status values remain authoritative.
 
-## Before merging/submitting
+## Review
 
-- Review changes to all three service modules; earlier A/C implementations are retained in archive/pre-integration.
-- Run the integrated tests on PostgreSQL and try the CLI against a new empty database.
-- Align the Google ERD and separate schema spreadsheet with the approved relational model.
-- Explain the default preference profile and deferred mandatory-participation rules in the report.
-- Confirm the status domains and pet-preference semantics documented in SCHEMA_ALIGNMENT.md.
-- Account registration/login/session handling remains outside this demo implementation. Do not describe demo user selection as authentication.
-- Update the final report, screenshots, contribution statement and AI acknowledgement. Earlier A-only Word/Markdown reports are not final.
-- Keep real passwords and personal configuration out of commits.
+1. Review docs/COMPATIBILITY_REVIEW.md.
+2. Run verification against an isolated PostgreSQL database.
+3. Try run.py commands in a new disposable database.
+4. Confirm remaining report/schema naming differences separately.
+5. Decide on rescheduling in a separate change if it is required.
 
-No existing local database is automatically migrated. Preserve it and test this version separately.
+Old scripts and tests under archive/pre-integration are historical. Do not run them against the shared database. No existing local data or personal configuration is migrated.

@@ -8,7 +8,7 @@ class BusinessRuleError(ValueError):
 
 
 PROPERTY_FIELDS=('street_number','street_name','suburb','state','postcode','unit_number',
-                 'property_type','total_rooms','car_spots','smoking_policy','pet_policy')
+                 'property_type','total_rooms','car_spots','smoking_policy','pet_friendly')
 ROOM_FIELDS=('room_type','num_roommates','is_furnished','has_ensuite','description')
 
 
@@ -30,8 +30,8 @@ def _insert_room(conn, details):
 
 
 def _insert_listing(conn,actor_id,room_id,weekly_rent,available_from,num_housemates=0):
-    return conn.execute('''INSERT INTO listing(room_id,creator_user_id,weekly_rent,available_from,num_housemates)
-        VALUES (%s,%s,%s,%s,%s) RETURNING listing_id''',
+    return conn.execute('''INSERT INTO listing(room_id,creator_user_id,weekly_rent,available_from,num_housemates,listing_date,status)
+        VALUES (%s,%s,%s,%s,%s,CURRENT_DATE,'OPEN') RETURNING listing_id''',
         (room_id,actor_id,weekly_rent,available_from,num_housemates)).fetchone()['listing_id']
 
 
@@ -136,7 +136,7 @@ def update_room(conn,actor_id,room_id,details):
 
 def list_listings(conn,status=None,advertiser_id=None):
     return conn.execute('''SELECT l.*,r.room_type,r.is_furnished,r.has_ensuite,
-        p.suburb,p.smoking_policy,p.pet_policy FROM listing l JOIN room r USING(room_id)
+        p.suburb,p.smoking_policy,p.pet_friendly FROM listing l JOIN room r USING(room_id)
         JOIN property_characteristics p USING(property_id)
         WHERE (%s::text IS NULL OR l.status=%s) AND (%s::integer IS NULL OR l.creator_user_id=%s)
         ORDER BY l.weekly_rent,l.listing_id''',(status,status,advertiser_id,advertiser_id)).fetchall()

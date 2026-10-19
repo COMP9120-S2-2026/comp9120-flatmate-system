@@ -1,5 +1,5 @@
 # Historical implementation
 
-These files preserve earlier member modules and SQL for reference and contribution review. They are not loaded by the integrated application and must not be run against the ten-table database.
+Earlier A/C modules, A-only SQL and tests are retained here for reference. They describe a different schema and must not be loaded against Max's shared database.
 
-Use the repository-root housematch_schema.sql and housematch_triggers.sql, current src/housematch modules, and tests/test_integration.py instead. Earlier Member A reports and evidence under docs are historical as well.
+Current setup uses the root housematch_schema.sql and housematch_triggers.sql. Current A/C compatibility tests are in tests/test_integration.py. Earlier Member A report files under docs are historical too.

@@ -1,9 +1,0 @@
-{
-  "profile_name": "Near campus",
-  "min_rent": 250,
-  "max_rent": 450,
-  "desired_move_in_date": "2026-12-01",
-  "smoking_preference": "No smoking",
-  "pet_preference": null,
-  "suburbs": ["Glebe", "Newtown", "Camperdown"]
-}

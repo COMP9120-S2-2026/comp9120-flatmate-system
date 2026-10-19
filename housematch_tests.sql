@@ -1,12 +1,12 @@
 -- =====================================================================
--- HouseMatch - housematch_tests.sql
+-- HouseMatch - 06_tests.sql
 -- COMP9120 Group Project
 -- Automated integrity, trigger, transaction and rollback tests.
 -- =====================================================================
 -- PREREQUISITES
---   1. Run housematch_schema.sql
---   2. Run housematch_triggers.sql (including Triggers 1-10)
---   3. Run housematch_sample_data.sql (recommended, but these tests use their own data)
+--   1. Run 01_schema.sql
+--   2. Run 02_triggers.sql (including Triggers 1-10)
+--   3. Run 03_sample_data.sql (recommended, but these tests use their own data)
 --
 -- HOW TO RUN
 --   Open this file in pgAdmin's Query Tool and execute THE WHOLE FILE.
@@ -20,7 +20,7 @@
 --   If execution stops before the final ROLLBACK, run ROLLBACK manually.
 --
 -- Concurrency requires TWO database sessions and is documented separately
--- in housematch_concurrency_tests.sql.
+-- in 06_concurrency_manual.sql.
 -- =====================================================================
 
 BEGIN;
@@ -88,7 +88,7 @@ BEGIN
 
     INSERT INTO property_characteristics (
         street_number, street_name, suburb, state, postcode, unit_number,
-        property_type, total_rooms, car_spots, smoking_policy, pet_policy
+        property_type, total_rooms, car_spots, smoking_policy, pet_friendly
     )
     VALUES (
         '999', v_street, 'Testville', 'NSW', '2000', NULL,
@@ -196,7 +196,7 @@ BEGIN
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('100', 'Bad Postcode Street', 'Testville', 'NSW', 'ABCD',
                 'House', 2, 0, 'No smoking', FALSE);
@@ -210,7 +210,7 @@ BEGIN
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('101', 'Bad State Street', 'Testville', 'XYZ', '2000',
                 'House', 2, 0, 'No smoking', FALSE);
@@ -224,7 +224,7 @@ BEGIN
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode, unit_number,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('999', v_street, 'Testville', 'NSW', '2000', NULL,
                 'House', 3, 1, 'No smoking', FALSE);
@@ -294,7 +294,7 @@ BEGIN
     BEGIN
         INSERT INTO preference_profile (
             user_id, profile_name, min_rent, max_rent,
-            smoking_preference, pet_preference
+            smoking_preference, pet_friendly
         )
         VALUES (v_user_a, 'Invalid Budget', 600, 400, 'Any', FALSE);
         RAISE EXCEPTION USING ERRCODE = 'PT001', MESSAGE = 'FAIL A11: invalid budget range was accepted';
@@ -347,7 +347,7 @@ BEGIN
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('102', 'Bad Property Type Street', 'Testville', 'NSW', '2000',
                 'Terrace', 2, 0, 'No smoking', FALSE);
@@ -361,7 +361,7 @@ BEGIN
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('103', 'Bad Smoking Policy Street', 'Testville', 'NSW', '2000',
                 'House', 2, 0, 'Indoors allowed', FALSE);
@@ -371,18 +371,18 @@ BEGIN
         RAISE NOTICE 'PASS A17: invalid smoking policy rejected';
     END;
 
-    -- A18: pet_policy is required and cannot be NULL.
+    -- A18: pet_friendly is required and cannot be NULL.
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('104', 'Missing Pet Friendly Street', 'Testville', 'NSW', '2000',
                 'House', 2, 0, 'No smoking', NULL);
-        RAISE EXCEPTION USING ERRCODE = 'PT001', MESSAGE = 'FAIL A18: NULL pet_policy was accepted';
+        RAISE EXCEPTION USING ERRCODE = 'PT001', MESSAGE = 'FAIL A18: NULL pet_friendly was accepted';
     EXCEPTION WHEN not_null_violation THEN
         v_passed := v_passed + 1;
-        RAISE NOTICE 'PASS A18: NULL pet_policy rejected';
+        RAISE NOTICE 'PASS A18: NULL pet_friendly rejected';
     END;
 
     -- A19: room_type must be Private or Shared.
@@ -413,14 +413,14 @@ BEGIN
         RAISE NOTICE 'PASS B01: application to PAUSED listing rejected';
     END;
 
-    -- B02: An application's target listing is immutable.
+    -- B02: Trigger 2 also rejects changing an application's listing to PAUSED.
     BEGIN
         UPDATE application
         SET listing_id = v_listing_paused
         WHERE application_id = v_app_b;
         RAISE EXCEPTION USING ERRCODE = 'PT001', MESSAGE = 'FAIL B02: application moved to PAUSED listing';
-    EXCEPTION WHEN check_violation THEN
-        IF SQLERRM NOT LIKE '%Application user and listing are immutable%' THEN
+    EXCEPTION WHEN raise_exception THEN
+        IF SQLERRM NOT LIKE '%Applications can only be submitted to OPEN listings%' THEN
             RAISE;
         END IF;
         v_passed := v_passed + 1;
@@ -503,15 +503,19 @@ BEGIN
         RAISE NOTICE 'PASS B08: double-booking rejected';
     END;
 
-    -- B09: Report section 2.4 permits rescheduling within the same listing.
-    UPDATE viewing_booking SET viewing_timestamp=v_slot_other WHERE booking_id=v_booking_a;
-    IF (SELECT status FROM viewing_slot WHERE listing_id=v_listing_open AND viewing_timestamp=v_slot_open)<>'AVAILABLE'
-       OR (SELECT status FROM viewing_slot WHERE listing_id=v_listing_open AND viewing_timestamp=v_slot_other)<>'BOOKED' THEN
-        RAISE EXCEPTION 'FAIL B09: rescheduling did not move slot availability';
-    END IF;
-    UPDATE viewing_booking SET viewing_timestamp=v_slot_open WHERE booking_id=v_booking_a;
-    v_passed:=v_passed+1;
-    RAISE NOTICE 'PASS B09: rescheduling preserves booking identity and releases the old slot';
+    -- B09: Trigger 3 prevents moving an existing booking to another slot.
+    BEGIN
+        UPDATE viewing_booking
+        SET viewing_timestamp = v_slot_other
+        WHERE booking_id = v_booking_a;
+        RAISE EXCEPTION USING ERRCODE = 'PT001', MESSAGE = 'FAIL B09: booked slot was changed';
+    EXCEPTION WHEN raise_exception THEN
+        IF SQLERRM NOT LIKE '%Cannot change the viewing slot of an existing booking%' THEN
+            RAISE;
+        END IF;
+        v_passed := v_passed + 1;
+        RAISE NOTICE 'PASS B09: existing booking cannot change slots';
+    END;
 
     -- B10: Trigger 4 releases a slot when the booking is cancelled.
     UPDATE viewing_booking
@@ -692,7 +696,7 @@ BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode,
             property_type, total_rooms, car_spots,
-            smoking_policy, pet_policy
+            smoking_policy, pet_friendly
         )
         VALUES (
             '998', v_street, 'Testville', 'NSW', '2000',
@@ -879,7 +883,7 @@ BEGIN
 
     -- ---------------------------------------------------------------
     -- C. MULTI-STEP TRANSACTION 1: ACCEPT APPLICATION / CLOSE LISTING
-    -- Replicates the workflow from housematch_transactions.sql on test fixtures.
+    -- Replicates the workflow from 05_transactions.sql on test fixtures.
     -- ---------------------------------------------------------------
     INSERT INTO viewing_booking (user_id, listing_id, viewing_timestamp)
     VALUES (v_user_a, v_listing_workflow, v_slot_work_a)
@@ -977,7 +981,7 @@ BEGIN
     -- ---------------------------------------------------------------
     INSERT INTO property_characteristics (
         street_number, street_name, suburb, state, postcode, unit_number,
-        property_type, total_rooms, car_spots, smoking_policy, pet_policy
+        property_type, total_rooms, car_spots, smoking_policy, pet_friendly
     )
     VALUES ('1000', 'HouseMatch New Listing Street ' || v_run,
             'Petersham', 'NSW', '2049', NULL,
@@ -1024,7 +1028,7 @@ BEGIN
     BEGIN
         INSERT INTO property_characteristics (
             street_number, street_name, suburb, state, postcode, unit_number,
-            property_type, total_rooms, car_spots, smoking_policy, pet_policy
+            property_type, total_rooms, car_spots, smoking_policy, pet_friendly
         )
         VALUES ('1001', 'HouseMatch Rollback Test Street ' || v_run,
                 'Petersham', 'NSW', '2049', NULL,

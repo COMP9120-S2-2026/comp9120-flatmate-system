@@ -1,13 +1,15 @@
-# Database setup
+# Shared PostgreSQL database
 
-Canonical SQL files are in the repository root. In a new empty PostgreSQL 15+ database, execute:
+The canonical SQL files are in the repository root. Execute these in a new empty PostgreSQL 15+ database:
 
 1. housematch_schema.sql
 2. housematch_triggers.sql
 3. housematch_sample_data.sql
 
-Alternatively, use run.py init followed by run.py seed. Both routes use the same ten-table schema. Do not run both initialisation routes on the same database.
+Alternatively, run run.py init and run.py seed. Do not initialise twice.
 
-For read-only examples, use housematch_queries.sql or sql/90_pgadmin_queries.sql. Transaction and concurrency examples perform writes and belong in a disposable demo database. The integrated automated suite is run with tools/run_verification.py.
+The shared SQL files and their database rules are unchanged in this compatibility revision. The Python services have been adapted to them.
 
-This is a fresh-install baseline, not an in-place migration. Preserve existing databases and personal configuration.
+housematch_queries.sql contains query examples. housematch_transactions.sql and housematch_concurrency_tests.sql perform writes and belong in disposable databases. housematch_tests.sql contains the original rolled-back SQL checks.
+
+Run tools/run_verification.py for Python compatibility and SQL regression tests.

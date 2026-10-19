@@ -78,7 +78,7 @@ BEGIN
         total_rooms,
         car_spots,
         smoking_policy,
-        pet_policy
+        pet_friendly
     )
     VALUES (
         '42',

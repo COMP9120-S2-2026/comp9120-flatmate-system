@@ -19,7 +19,7 @@ CREATE TABLE property_characteristics (
     total_rooms INTEGER NOT NULL CHECK (total_rooms > 0),
     car_spots INTEGER NOT NULL CHECK (car_spots >= 0),
     smoking_policy VARCHAR(30) CHECK(smoking_policy IN('No smoking', 'Outdoor only', 'Any')) NOT NULL,
-    pet_policy BOOLEAN NOT NULL,
+    pet_friendly BOOLEAN NOT NULL,
     UNIQUE NULLS NOT DISTINCT (
         street_number,
         street_name,
@@ -33,11 +33,11 @@ CREATE TABLE property_characteristics (
 CREATE TABLE preference_profile (
     user_id INTEGER NOT NULL,
     profile_name VARCHAR(100) NOT NULL,
-    min_rent NUMERIC(10,2) NOT NULL CHECK (min_rent >= 0 AND min_rent < 100000000),
-    max_rent NUMERIC(10,2) NOT NULL CHECK (max_rent >= min_rent AND max_rent < 100000000),
+    min_rent NUMERIC(10,2) NOT NULL CHECK (min_rent >= 0),
+    max_rent NUMERIC(10,2) NOT NULL CHECK (max_rent >= min_rent),
     desired_move_in_date DATE,
     smoking_preference VARCHAR(30) CHECK(smoking_preference IN('No smoking', 'Outdoor only', 'Any')) NOT NULL,
-    pet_preference BOOLEAN,
+    pet_friendly BOOLEAN,
     PRIMARY KEY (user_id, profile_name),
     FOREIGN KEY (user_id) REFERENCES app_user(user_id)
 );
@@ -69,11 +69,11 @@ CREATE TABLE listing (
     listing_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     room_id INTEGER NOT NULL,
     creator_user_id INTEGER NOT NULL,
-    weekly_rent NUMERIC(10,2) NOT NULL CHECK (weekly_rent > 0 AND weekly_rent < 100000000),
+    weekly_rent NUMERIC(10,2) NOT NULL CHECK (weekly_rent > 0),
     available_from DATE NOT NULL,
-    listing_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    status VARCHAR(30) NOT NULL DEFAULT 'OPEN' CHECK(status IN('OPEN', 'PAUSED', 'CLOSED')),
-    num_housemates INTEGER NOT NULL DEFAULT 0 CHECK (num_housemates >= 0),
+    listing_date DATE NOT NULL,
+    status VARCHAR(30) NOT NULL CHECK(status IN('OPEN', 'PAUSED', 'CLOSED')),
+    num_housemates INTEGER NOT NULL CHECK (num_housemates >= 0),
     FOREIGN KEY (room_id) REFERENCES room(room_id),
     FOREIGN KEY (creator_user_id) REFERENCES app_user(user_id)    
 );
@@ -93,10 +93,11 @@ CREATE TABLE application (
     user_id INTEGER NOT NULL,
     listing_id INTEGER NOT NULL,
     application_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    status VARCHAR(30) NOT NULL CHECK(status IN('PENDING', 'ACCEPTED', 'REJECTED', 'WITHDRAWN')) DEFAULT 'PENDING',
+    status VARCHAR(30) NOT NULL CHECK(status IN('PENDING', 'ACCEPTED', 'REJECTED')) DEFAULT 'PENDING', 
     message TEXT,
     FOREIGN KEY (user_id) REFERENCES app_user(user_id),
-    FOREIGN KEY (listing_id) REFERENCES listing(listing_id)
+    FOREIGN KEY (listing_id) REFERENCES listing(listing_id), 
+	UNIQUE(user_id, listing_id)
 );
 
 CREATE TABLE viewing_slot (
@@ -117,15 +118,3 @@ CREATE TABLE viewing_booking (
     FOREIGN KEY (user_id) REFERENCES app_user(user_id),
     FOREIGN KEY (listing_id, viewing_timestamp) REFERENCES viewing_slot(listing_id, viewing_timestamp)
 );
-
--- Conditional uniqueness remains correct even for competing database sessions.
-CREATE UNIQUE INDEX one_active_listing_per_room ON listing(room_id)
-    WHERE status IN ('OPEN','PAUSED');
-CREATE UNIQUE INDEX one_active_application_per_user_listing ON application(user_id,listing_id)
-    WHERE status IN ('PENDING','ACCEPTED');
-CREATE UNIQUE INDEX one_accepted_application_per_listing ON application(listing_id)
-    WHERE status='ACCEPTED';
-CREATE UNIQUE INDEX one_confirmed_booking_per_slot ON viewing_booking(listing_id,viewing_timestamp)
-    WHERE status='CONFIRMED';
-CREATE UNIQUE INDEX one_confirmed_viewing_per_user_listing ON viewing_booking(user_id,listing_id)
-    WHERE status='CONFIRMED';

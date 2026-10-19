@@ -9,7 +9,7 @@
   "total_rooms": 3,
   "car_spots": 0,
   "smoking_policy": "No smoking",
-  "pet_policy": false,
+  "pet_friendly": false,
   "room_type": "Private",
   "num_roommates": 0,
   "is_furnished": true,

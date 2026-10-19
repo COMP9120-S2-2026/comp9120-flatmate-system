@@ -1,11 +1,11 @@
 -- ============================================================
--- HouseMatch - housematch_queries.sql
+-- HouseMatch - 04_queries.sql
 -- COMP9120 Group Project
 -- Eight representative, READ-ONLY PostgreSQL queries.
 --
--- Run after housematch_schema.sql, housematch_triggers.sql and housematch_sample_data.sql.
+-- Run after 01_schema.sql, 02_triggers.sql and 03_sample_data.sql.
 -- Each SELECT can be executed independently in pgAdmin.
--- Example IDs and filters are based on housematch_sample_data.sql.
+-- Example IDs and filters are based on 03_sample_data.sql.
 -- Results may change after running the transaction demonstrations.
 -- ============================================================
 
@@ -63,7 +63,7 @@ SELECT
     p.total_rooms,
     p.car_spots,
     p.smoking_policy,
-    p.pet_policy,
+    p.pet_friendly,
     u.user_id AS creator_user_id,
     u.first_name AS creator_first_name,
     u.last_name AS creator_last_name
@@ -84,13 +84,13 @@ WHERE l.listing_id = 3;
 --
 -- Interpretation used for matching:
 -- * Listing rent must fall within the profile's min/max range.
--- * Match a preferred suburb, or any suburb when none are specified.
+-- * Property must be in at least one preferred suburb.
 -- * A room must be available by the desired move-in date.
 -- * 'No smoking' requires a no-smoking property.
 -- * 'Outdoor only' allows no smoking or outdoor-only smoking.
 -- * A profile requiring pet-friendly housing matches only properties
---   with pet_policy = TRUE.
--- * FALSE/NULL profile pet_preference imposes no pet-friendly filter.
+--   with pet_friendly = TRUE.
+-- * FALSE/NULL profile pet_friendly imposes no pet-friendly filter.
 -- ============================================================
 SELECT
     pp.user_id,
@@ -101,9 +101,13 @@ SELECT
     l.weekly_rent,
     l.available_from,
     p.smoking_policy,
-    p.pet_policy
+    p.pet_friendly
 FROM preference_profile AS pp
-CROSS JOIN property_characteristics AS p
+JOIN preferred_suburb AS ps
+    ON ps.user_id = pp.user_id
+   AND ps.profile_name = pp.profile_name
+JOIN property_characteristics AS p
+    ON p.suburb = ps.preferred_suburb
 JOIN room AS r
     ON r.property_id = p.property_id
 JOIN listing AS l
@@ -111,12 +115,6 @@ JOIN listing AS l
 WHERE pp.user_id = 13
   AND pp.profile_name = 'Uni Commute'
   AND l.status = 'OPEN'
-  AND l.creator_user_id <> pp.user_id
-  AND (
-      NOT EXISTS (SELECT 1 FROM preferred_suburb ps WHERE ps.user_id=pp.user_id AND ps.profile_name=pp.profile_name)
-      OR EXISTS (SELECT 1 FROM preferred_suburb ps WHERE ps.user_id=pp.user_id AND ps.profile_name=pp.profile_name
-                 AND ps.preferred_suburb=p.suburb)
-  )
   AND l.weekly_rent BETWEEN pp.min_rent AND pp.max_rent
   AND (
       pp.desired_move_in_date IS NULL
@@ -130,8 +128,8 @@ WHERE pp.user_id = 13
           AND p.smoking_policy IN ('No smoking', 'Outdoor only'))
   )
   AND (
-      pp.pet_preference IS DISTINCT FROM TRUE
-      OR p.pet_policy = TRUE
+      pp.pet_friendly IS DISTINCT FROM TRUE
+      OR p.pet_friendly = TRUE
   )
 ORDER BY l.weekly_rent ASC, l.listing_id;
 

@@ -31,7 +31,7 @@ def main():
     (evidence_dir/'ALIGNMENT_TEST_RESULTS.md').write_text('# Integrated verification results\n\n'
         +'Recorded verification on '+recorded_date+' using PostgreSQL '+version+'.\n\n'
         +f"Tests run: {result.testsRun}; failures: {len(result.failures)}; errors: {len(result.errors)}; skipped: {len(result.skipped)}.\n\n"
-        +'The run covers the canonical ten-table schema, A/B/C service integration, rollback, competing acceptances and bookings.\n\n'
+        +'The run covers A/C compatibility with the unchanged shared schema, original SQL tests, rollback and competing acceptances. No new B features or database rules are included.\n\n'
         +'```text\n'+output.getvalue()+'```\n',encoding='utf-8')
     print(output.getvalue())
     print(json.dumps(evidence))
