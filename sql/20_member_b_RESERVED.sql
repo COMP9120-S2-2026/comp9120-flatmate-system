@@ -1,4 +1,0 @@
--- MEMBER B TO COMPLETE: preference_profile, preferred_suburb, saves,
--- viewing_slot, viewing_booking and their SQL/tests.
--- The proposed keys, foreign keys and cancellation rule are in HANDOFF.md.
--- Do not treat this file as an implemented module.
