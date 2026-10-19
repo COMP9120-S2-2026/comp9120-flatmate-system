@@ -80,14 +80,15 @@ BEGIN
     IF TG_OP = 'UPDATE' THEN
 
         IF NEW.listing_id IS DISTINCT FROM OLD.listing_id
-           OR NEW.viewing_timestamp IS DISTINCT FROM OLD.viewing_timestamp THEN
+           OR NEW.user_id IS DISTINCT FROM OLD.user_id
+           OR NEW.booking_date IS DISTINCT FROM OLD.booking_date THEN
 
-            RAISE EXCEPTION 'Cannot change the viewing slot of an existing booking';
+            RAISE EXCEPTION 'Booking listing, user and original date are immutable';
 
         END IF;
 
-        IF OLD.status = 'CONFIRMED'
-           OR NEW.status <> 'CONFIRMED' THEN
+        IF NEW.status <> 'CONFIRMED'
+           OR (OLD.status = 'CONFIRMED' AND NEW.viewing_timestamp=OLD.viewing_timestamp) THEN
             RETURN NEW;
         END IF;
 
@@ -114,7 +115,8 @@ BEGIN
       AND viewing_timestamp = NEW.viewing_timestamp
     FOR UPDATE;
 
-    IF slot_status IS DISTINCT FROM 'AVAILABLE' THEN
+    IF slot_status IS DISTINCT FROM 'AVAILABLE'
+       OR NEW.viewing_timestamp <= (CURRENT_TIMESTAMP AT TIME ZONE 'Australia/Sydney') THEN
         RAISE EXCEPTION 'Viewing slot is not available';
     END IF;
 
@@ -135,6 +137,13 @@ BEGIN
     SET status = 'BOOKED'
     WHERE listing_id = NEW.listing_id
       AND viewing_timestamp = NEW.viewing_timestamp;
+
+    IF TG_OP='UPDATE' AND OLD.status='CONFIRMED'
+       AND NEW.viewing_timestamp<>OLD.viewing_timestamp THEN
+        UPDATE viewing_slot SET status='AVAILABLE'
+        WHERE listing_id=OLD.listing_id AND viewing_timestamp=OLD.viewing_timestamp
+          AND status='BOOKED';
+    END IF;
 
     RETURN NEW;
 
@@ -407,3 +416,90 @@ BEFORE INSERT OR UPDATE OF user_id, listing_id, status
 ON viewing_booking
 FOR EACH ROW
 EXECUTE FUNCTION check_one_viewing_per_listing();
+
+-- Report section 2.4: every registered user has at least one profile.
+CREATE FUNCTION create_default_profile() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    INSERT INTO preference_profile(user_id,profile_name,min_rent,max_rent,smoking_preference)
+    VALUES (NEW.user_id,'Default',0,99999999,'Any');
+    RETURN NEW;
+END $$;
+CREATE TRIGGER default_profile AFTER INSERT ON app_user
+    FOR EACH ROW EXECUTE FUNCTION create_default_profile();
+
+CREATE FUNCTION preserve_profile() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    PERFORM 1 FROM app_user WHERE user_id=OLD.user_id FOR UPDATE;
+    IF EXISTS (SELECT 1 FROM app_user WHERE user_id=OLD.user_id)
+       AND NOT EXISTS (SELECT 1 FROM preference_profile WHERE user_id=OLD.user_id) THEN
+        RAISE EXCEPTION 'Each user must retain at least one preference profile' USING ERRCODE='23514';
+    END IF;
+    RETURN NULL;
+END $$;
+CREATE CONSTRAINT TRIGGER profile_participation AFTER DELETE OR UPDATE ON preference_profile
+    DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION preserve_profile();
+
+-- Report section 2.4: publishing creates the room and first listing atomically.
+CREATE FUNCTION require_room_listing() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE candidates INTEGER[]; candidate INTEGER;
+BEGIN
+    IF TG_TABLE_NAME='room' THEN candidates:=ARRAY[NEW.room_id];
+    ELSIF TG_OP='DELETE' THEN candidates:=ARRAY[OLD.room_id];
+    ELSE candidates:=ARRAY[OLD.room_id,NEW.room_id]; END IF;
+    FOREACH candidate IN ARRAY candidates LOOP
+        PERFORM 1 FROM room WHERE room_id=candidate FOR UPDATE;
+        IF EXISTS (SELECT 1 FROM room WHERE room_id=candidate)
+           AND NOT EXISTS (SELECT 1 FROM listing WHERE room_id=candidate) THEN
+            RAISE EXCEPTION 'Each recorded room must have at least one listing' USING ERRCODE='23514';
+        END IF;
+    END LOOP;
+    RETURN NULL;
+END $$;
+CREATE CONSTRAINT TRIGGER room_participation AFTER INSERT OR UPDATE ON room
+    DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION require_room_listing();
+CREATE CONSTRAINT TRIGGER listing_participation AFTER DELETE OR UPDATE ON listing
+    DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION require_room_listing();
+
+CREATE FUNCTION application_lifecycle() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    IF NEW.user_id<>OLD.user_id OR NEW.listing_id<>OLD.listing_id THEN
+        RAISE EXCEPTION 'Application user and listing are immutable' USING ERRCODE='23514';
+    END IF;
+    IF NEW.status<>OLD.status AND OLD.status<>'PENDING' THEN
+        RAISE EXCEPTION 'Only PENDING applications can change status' USING ERRCODE='23514';
+    END IF;
+    RETURN NEW;
+END $$;
+CREATE TRIGGER application_lifecycle_rules BEFORE UPDATE ON application
+    FOR EACH ROW EXECUTE FUNCTION application_lifecycle();
+
+CREATE FUNCTION listing_identity() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    IF NEW.room_id<>OLD.room_id OR NEW.creator_user_id<>OLD.creator_user_id THEN
+        RAISE EXCEPTION 'Listing room and creator are immutable' USING ERRCODE='23514';
+    END IF;
+    RETURN NEW;
+END $$;
+CREATE TRIGGER listing_identity_rules BEFORE UPDATE ON listing
+    FOR EACH ROW EXECUTE FUNCTION listing_identity();
+
+-- An accepted application must not commit with an open listing or pending rivals.
+CREATE FUNCTION verify_acceptance() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE target INTEGER; advert_status TEXT;
+BEGIN
+    target:=COALESCE(NEW.listing_id,OLD.listing_id);
+    SELECT status INTO advert_status FROM listing WHERE listing_id=target FOR UPDATE;
+    IF EXISTS (SELECT 1 FROM application WHERE listing_id=target AND status='ACCEPTED') THEN
+        IF advert_status IS DISTINCT FROM 'CLOSED' OR EXISTS (
+            SELECT 1 FROM application WHERE listing_id=target AND status='PENDING'
+        ) THEN
+            RAISE EXCEPTION 'Acceptance must close the listing and reject pending rivals in one transaction'
+                USING ERRCODE='23514';
+        END IF;
+    END IF;
+    RETURN NULL;
+END $$;
+CREATE CONSTRAINT TRIGGER application_acceptance AFTER INSERT OR UPDATE ON application
+    DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_acceptance();
+CREATE CONSTRAINT TRIGGER listing_acceptance AFTER UPDATE ON listing
+    DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_acceptance();

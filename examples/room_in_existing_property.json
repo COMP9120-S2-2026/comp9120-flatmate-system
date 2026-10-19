@@ -1,0 +1,8 @@
+{
+  "property_id": 2,
+  "room_type": "Private",
+  "num_roommates": 0,
+  "is_furnished": true,
+  "has_ensuite": false,
+  "description": "Synthetic additional room in an existing property"
+}

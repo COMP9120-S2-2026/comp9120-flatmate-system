@@ -1,9 +1,9 @@
 -- ============================================================
--- HouseMatch - 03_sample_data.sql
+-- HouseMatch - housematch_sample_data.sql
 -- COMP9120 Group Project
 -- Fictional users, addresses and listings for development/testing.
 -- ============================================================
--- Run AFTER 01_schema.sql and 02_triggers.sql.
+-- Run AFTER housematch_schema.sql and housematch_triggers.sql.
 -- Run ONCE against an EMPTY HouseMatch database.
 -- This script does NOT delete existing data.
 -- IDs below assume the identity sequences begin at 1.
@@ -61,7 +61,7 @@ VALUES
 -- All addresses are fictional examples; state/postcode combinations are plausible.
 INSERT INTO property_characteristics
     (street_number, street_name, suburb, state, postcode, unit_number,
-     property_type, total_rooms, car_spots, smoking_policy, pet_friendly)
+     property_type, total_rooms, car_spots, smoking_policy, pet_policy)
 VALUES
     ('24', 'Bridge Road', 'Glebe', 'NSW', '2037', '3B', 'Apartment', 3, 1, 'No smoking', TRUE),
     ('18', 'King Street', 'Newtown', 'NSW', '2042', NULL, 'Townhouse', 4, 0, 'Outdoor only', FALSE),
@@ -78,7 +78,7 @@ VALUES
 -- References user IDs assigned in the first INSERT.
 INSERT INTO preference_profile
     (user_id, profile_name, min_rent, max_rent, desired_move_in_date,
-     smoking_preference, pet_friendly)
+     smoking_preference, pet_preference)
 VALUES
     (7, 'Near Uni', 300.00, 450.00, '2026-11-01', 'No smoking', TRUE),
     (7, 'Budget', 250.00, 360.00, '2026-12-01', 'Any', FALSE),

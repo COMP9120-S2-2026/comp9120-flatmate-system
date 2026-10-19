@@ -1,130 +1,87 @@
-# COMP9120 Flatmate Matching System
+# HouseMatch — COMP9120 Flatmate Matching System
 
-Group 34 - Semester 2, 2026
+Group 34, Semester 2, 2026: Yijian Mei (David), Max, and Yu-Han Chang (John).
 
-## Project
-A database-driven flatmate matching system where households can list
-available rooms and prospective flatmates can search and apply.
+## Integrated baseline
 
-## Team
-- Yijian Mei (David)
-- Max
-- Yu-Han Chang (John)
+The application uses the ten-table relational schema in the group report (page 7), including PROPERTY_CHARACTERISTICS. Room/listing, preference/search/viewing, and application services now share the same schema and connection configuration. This is a reviewable integration baseline, not a claim that the final report or authentication is complete.
 
-## Current Stage
-- Week 10: Member A's Room/Listing module is implemented.
-- Member B's search/preferences/viewings and Member C's accounts/applications remain reserved.
-- A/B/C are provisional responsibility labels; the group must map them to real names.
-- This is an integration baseline, not a completed whole-system submission.
+Read [schema decisions](docs/SCHEMA_ALIGNMENT.md) and [team handoff](HANDOFF.md). Earlier Member A reports and diagrams under docs are historical, not the final integrated design.
 
-Read [HANDOFF.md](HANDOFF.md) before extending the schema or application.
+## Local setup in VS Code and pgAdmin
 
-## Setup
+Requires Python 3.10+ and PostgreSQL 15+ (NULLS NOT DISTINCT is used).
 
-### VS Code + pgAdmin (local configuration)
+1. Open the repository itself in VS Code, not its parent folder.
+2. Create a virtual environment and install dependencies:
 
-1. Open this repository folder in VS Code. Install Microsoft's Python and
-   Python Debugger extensions and select `.venv/Scripts/python.exe` as the interpreter.
-2. If needed, run `py -3.12 -m venv .venv`, then
-   `.\.venv\Scripts\python.exe -m pip install -r requirements.txt`.
-3. Copy `config.example.json` to `config.json` if it does not already exist.
-   Edit host, port, dbname, user and password in VS Code.
-   This file is ignored by Git because it contains local credentials.
-   Do not paste its contents into chat, screenshots or commits.
-4. In pgAdmin, connect to the same server using the same host/port/user.
-   Create a new empty database named `housematch` if it does not exist.
-   Do not delete an existing database or initialise over existing tables.
-5. In VS Code's Run and Debug panel, select
-   **HouseMatch: Initialise EMPTY database (once)** and run it.
-   Only after successful initialisation, run **HouseMatch: Seed demo data (once)**.
-6. Select **HouseMatch: List open listings** for everyday use.
-   Alternatively run `.\.venv\Scripts\python.exe run.py` in the terminal.
-   No PYTHONPATH or DATABASE_URL environment setup is required for this route.
-7. In pgAdmin, open Query Tool on **housematch**, then open
-   `sql/90_pgadmin_queries.sql` to query the same data.
-   Refresh **Schemas > public > Tables** after creating the tables.
+~~~powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+~~~
 
-Connection priority: an explicitly supplied connection URL (used by tests),
-then local `config.json`, then `DATABASE_URL`.
-An invalid local config raises an error instead of silently connecting elsewhere.
-The database must exist before the application connects.
+3. Select .venv/Scripts/python.exe as the Python interpreter.
+4. Copy config.example.json to config.json only if config.json does not already exist. Fill in your local host, port, database, user and password. Never put credentials into config.example.json or commit config.json.
+5. In pgAdmin, create a **new empty database**, for example housematch_integrated. Set the same database name in config.json. Existing databases are not migrated by this change.
+6. In the VS Code terminal, run:
 
-### Environment-variable alternative
+~~~powershell
+.\.venv\Scripts\python.exe run.py init
+.\.venv\Scripts\python.exe run.py seed
+.\.venv\Scripts\python.exe run.py list --status OPEN
+~~~
 
-Use Python 3.10+ and PostgreSQL. Create a separate empty database named
-`housematch` first. Run these commands from the repository root in PowerShell:
+Run init and seed only once on the new database. Do not run archived SQL or initialise over existing tables. The VS Code Run and Debug configurations can also initialise, seed and list data.
 
-```powershell
-python -m pip install -r requirements.txt
-$env:PYTHONPATH = "$PWD\src"
-$env:DATABASE_URL = 'postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/housematch'
-python -m housematch.cli init
-python -m housematch.cli seed
-```
+For an interactive menu:
 
-Use your own database credentials locally. Never commit passwords or real
-connection strings. The application reads environment variables directly.
-`init` creates tables in an empty schema and does not drop existing tables.
-`seed` refuses to overwrite non-empty user data. All demo data are synthetic.
+~~~powershell
+.\.venv\Scripts\python.exe housematch_cli.py
+~~~
 
-## Demonstrate Member A's functionality
+In pgAdmin, open Query Tool on that same database and run sql/90_pgadmin_queries.sql. Refresh Schemas > public > Tables to see all ten tables.
 
-```powershell
-python -m housematch.cli list --status OPEN
-python -m housematch.cli --user-id 1 list --mine
-python -m housematch.cli show 9
-python -m housematch.cli --user-id 1 publish examples/new_room.json --rent 360 --available-from 2026-11-01
-python -m housematch.cli --user-id 1 update 9 --rent 335 --available-from 2026-11-05
-python -m housematch.cli --user-id 1 update-room 1 examples/new_room.json
-python -m housematch.cli --user-id 1 close 9
-python -m housematch.cli --user-id 1 relist 1 --rent 340 --available-from 2026-11-05
-```
+Connection priority: explicit connection URL (tests), then local config.json, then DATABASE_URL. No PYTHONPATH setting is needed for run.py. Demo data contain 14 users, 10 properties, 12 rooms and 12 listings; all are synthetic.
 
-Fresh seeded data contain 3 demo users, 8 rooms and 9 listings, including one
-CLOSED historical advertisement. Listing 9 belongs to demo user 1.
-`--user-id` selects a demo identity; it is not authentication. Member C owns
-the account/session implementation and full application acceptance workflow.
+## Example commands
 
-## Tests
+~~~powershell
+python run.py --user-id 1 profiles
+python run.py --user-id 1 search Default
+python run.py --user-id 1 applications
+python run.py --user-id 1 profile-save examples/preference_profile.json
+python run.py --user-id 1 publish examples/new_property_room.json --rent 360 --available-from 2026-11-01 --housemates 2
+python run.py --help
+~~~
 
-```powershell
-$env:TEST_DATABASE_URL = $env:DATABASE_URL
-python -m unittest discover -s tests -v
+Use IDs returned by the program for later operations. A demo user ID is **not authentication**. Production login, password handling and session security are not implemented.
+
+## Verification
+
+Use an isolated test database and a role allowed to create schemas:
+
+~~~powershell
+$env:TEST_DATABASE_URL = 'postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/YOUR_TEST_DATABASE'
 python tools/run_verification.py
-```
+~~~
 
-Tests require permission to create schemas. They create a uniquely named
-test schema and remove only that schema; existing application schemas are
-not reset. The verification script records fresh results under `docs/`.
+The tests create and remove uniquely named test schemas. Do not use production credentials. [Current verification](docs/ALIGNMENT_TEST_RESULTS.md) records the integrated run; older TEST_RESULTS.md and cli_smoke_results.json describe the historical A-only version.
 
-[Recorded test results](docs/TEST_RESULTS.md) document the previous
-25-test Member A run. [CLI smoke results](docs/cli_smoke_results.json)
-document the previous command-line smoke run. These records do not prove
-that the reserved B/C features or the integrated whole system work.
-
-## Repository layout and responsibilities
+## Files
 
 | Path | Purpose |
 | --- | --- |
-| `src/housematch/` | Python implementation and clearly labelled B/C placeholders |
-| `sql/00_user_contract.sql` | Shared user scaffold, to be extended by C |
-| `sql/10_member_a.sql` | Room/Listing tables, constraints, indexes and triggers |
-| `sql/20_member_b_RESERVED.sql` | B's schema placeholder |
-| `sql/30_member_c_RESERVED.sql` | C's schema placeholder |
-| `tests/test_member_a.py` | A's PostgreSQL integration tests |
-| `examples/new_room.json` | Example room input |
-| `HANDOFF.md` | Responsibilities, assumptions and integration contract |
-| `docs/` | Draft report, A-only ER fragment and verification evidence |
+| housematch_schema.sql | Canonical ten-table definitions |
+| housematch_triggers.sql | Database business rules |
+| housematch_sample_data.sql | Synthetic fixtures for empty tables |
+| housematch_queries.sql | Demonstration queries |
+| housematch_transactions.sql | Write-operation examples; disposable demo databases only |
+| housematch_tests.sql | SQL integrity tests, rolled back after execution |
+| housematch_concurrency_tests.sql | Manual two-session scenarios |
+| src/housematch/member_a.py | Property, room and listing services |
+| src/housematch/member_b.py | Preferences, matching, saves and viewings |
+| src/housematch/member_c.py | Application lifecycle and atomic acceptance |
+| tests/test_integration.py | Integrated and concurrent PostgreSQL tests |
+| archive/pre-integration/ | Earlier implementation retained for reference |
 
-## Report and remaining work
-
-- [English Word report](docs/HouseMatch_Integrated_Report_Member_A.docx)
-- [Editable Markdown report](docs/HouseMatch_Integrated_Report_Member_A.md)
-- [Member A conceptual ER fragment](docs/diagrams/Member_A_Conceptual_ERD.png)
-
-The report completes A's contribution and visibly reserves B/C's sections.
-The diagram is an A-only fragment, not the final whole-system ER diagram.
-Review the working assumptions in HANDOFF.md together, complete B/C's real
-implementations and evidence, and run end-to-end tests before final submission.
-Record actual individual contributions and acknowledge AI assistance as
-required by the project brief.
+Review the report discrepancies and remaining work in HANDOFF.md before submission. Record actual individual contributions and acknowledge AI assistance according to course rules.

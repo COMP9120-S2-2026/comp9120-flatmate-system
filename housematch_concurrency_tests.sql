@@ -89,7 +89,7 @@ BEGIN
     -- Property 1: full (2/2 rooms), for the original F01 and F02 tests.
     INSERT INTO property_characteristics (
         street_number, street_name, suburb, state, postcode, unit_number,
-        property_type, total_rooms, car_spots, smoking_policy, pet_friendly
+        property_type, total_rooms, car_spots, smoking_policy, pet_policy
     )
     VALUES (
         '999', 'HouseMatch Concurrency Test Street', 'Testville',
@@ -158,7 +158,7 @@ BEGIN
     --   One free room space remains (for F04).
     INSERT INTO property_characteristics (
         street_number, street_name, suburb, state, postcode, unit_number,
-        property_type, total_rooms, car_spots, smoking_policy, pet_friendly
+        property_type, total_rooms, car_spots, smoking_policy, pet_policy
     )
     VALUES (
         '998', 'HouseMatch Concurrency Test Street', 'Testville',
