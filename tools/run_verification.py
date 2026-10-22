@@ -1,4 +1,4 @@
-"""Write A test evidence from an actual PostgreSQL run, never fabricated results."""
+"""Record integrated test evidence from an actual PostgreSQL run."""
 from pathlib import Path
 from datetime import datetime
 import contextlib
@@ -27,11 +27,11 @@ def main():
     evidence_dir=ROOT/'docs'
     evidence_dir.mkdir(parents=True,exist_ok=True)
     recorded_date=datetime.now().astimezone().strftime('%d %B %Y')
-    (evidence_dir/'test_results.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
-    (evidence_dir/'TEST_RESULTS.md').write_text('# Member A verification results\n\n'
+    (evidence_dir/'alignment_test_results.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
+    (evidence_dir/'ALIGNMENT_TEST_RESULTS.md').write_text('# Integrated verification results\n\n'
         +'Recorded verification on '+recorded_date+' using PostgreSQL '+version+'.\n\n'
         +f"Tests run: {result.testsRun}; failures: {len(result.failures)}; errors: {len(result.errors)}; skipped: {len(result.skipped)}.\n\n"
-        +'The database run covers A only. Full booking and application-acceptance workflows remain reserved for B/C.\n\n'
+        +'The run covers A/C compatibility with the unchanged shared schema, original SQL tests, rollback and competing acceptances. No new B features or database rules are included.\n\n'
         +'```text\n'+output.getvalue()+'```\n',encoding='utf-8')
     print(output.getvalue())
     print(json.dumps(evidence))

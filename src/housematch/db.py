@@ -47,7 +47,7 @@ def connect(database_url=None, schema=None):
 
 
 def initialise(conn):
-    """Create the A module and user contract in an empty schema; no reset/drop."""
+    """Create the report's ten-table schema in an empty schema; no reset/drop."""
     with conn.transaction():
-        for name in ['00_user_contract.sql', '10_member_a.sql']:
-            conn.execute((ROOT / 'sql' / name).read_text(encoding='utf-8'))
+        for name in ['housematch_schema.sql', 'housematch_triggers.sql']:
+            conn.execute((ROOT / name).read_text(encoding='utf-8'))
