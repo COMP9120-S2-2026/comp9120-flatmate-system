@@ -1186,33 +1186,102 @@ def update_application_status(conn, owner_id, application_id, new_status):
         return False
 
     try:
-        with conn.cursor() as cursor:
-            cursor.execute("""
-                UPDATE application AS a
-                SET status = %s
-                FROM listing AS l
-                WHERE a.listing_id = l.listing_id
-                  AND a.application_id = %s
-                  AND l.creator_user_id = %s
-                  AND a.status = 'PENDING'
-                RETURNING a.application_id;
-            """, (new_status, application_id, owner_id))
-
-            updated = cursor.fetchone()
-
+        # Earlier CLI SELECTs may have started an implicit transaction.
+        # End that read transaction before beginning this write operation.
         conn.commit()
 
-        if updated:
-            print(f"\nApplication successfully {new_status.lower()}!")
-            return True
+        with conn.transaction():
+            with conn.cursor() as cursor:
 
-        print("\nApplication not found, not pending, or not owned by you.")
-        return False
+                # Find the target listing before acquiring its lock.
+                cursor.execute("""
+                    SELECT listing_id
+                    FROM application
+                    WHERE application_id = %s;
+                """, (application_id,))
 
-    except psycopg.Error as error:
+                result = cursor.fetchone()
+
+                if result is None:
+                    raise ValueError("Application not found.")
+
+                listing_id = result[0]
+
+                # Lock listing and check ownership / availability.
+                cursor.execute("""
+                    SELECT creator_user_id, status
+                    FROM listing
+                    WHERE listing_id = %s
+                    FOR UPDATE;
+                """, (listing_id,))
+
+                listing = cursor.fetchone()
+
+                if (
+                    listing is None
+                    or listing[0] != owner_id
+                    or listing[1] != "OPEN"
+                ):
+                    raise ValueError(
+                        "Listing is not OPEN or is not owned by you."
+                    )
+
+                # Update the selected application.
+                cursor.execute("""
+                    UPDATE application
+                    SET status = %s
+                    WHERE application_id = %s
+                      AND listing_id = %s
+                      AND status = 'PENDING'
+                    RETURNING application_id;
+                """, (new_status, application_id, listing_id))
+
+                if cursor.fetchone() is None:
+                    raise ValueError(
+                        "Application is no longer PENDING."
+                    )
+
+                if new_status == "ACCEPTED":
+
+                    # Reject remaining pending applications.
+                    cursor.execute("""
+                        UPDATE application
+                        SET status = 'REJECTED'
+                        WHERE listing_id = %s
+                          AND application_id <> %s
+                          AND status = 'PENDING';
+                    """, (listing_id, application_id))
+
+                    # Cancel confirmed viewing bookings first.
+                    cursor.execute("""
+                        UPDATE viewing_booking
+                        SET status = 'CANCELLED'
+                        WHERE listing_id = %s
+                          AND status = 'CONFIRMED';
+                    """, (listing_id,))
+
+                    # Cancel all remaining viewing slots.
+                    cursor.execute("""
+                        UPDATE viewing_slot
+                        SET status = 'CANCELLED'
+                        WHERE listing_id = %s
+                          AND status <> 'CANCELLED';
+                    """, (listing_id,))
+
+                    # Close the listing.
+                    cursor.execute("""
+                        UPDATE listing
+                        SET status = 'CLOSED'
+                        WHERE listing_id = %s;
+                    """, (listing_id,))
+
+        print(f"\nApplication successfully {new_status.lower()}!")
+        return True
+
+    except (psycopg.Error, ValueError) as error:
         conn.rollback()
         print("\nFailed to update application.")
-        print("Database error:", error)
+        print("Error:", error)
         return False
 
 def manage_applications(conn, user_id):
