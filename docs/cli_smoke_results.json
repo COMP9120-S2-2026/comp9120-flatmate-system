@@ -1,0 +1,250 @@
+[
+  {
+    "command": "init",
+    "exit_code": 0,
+    "result": {
+      "created": "User contract, Room and Listing"
+    }
+  },
+  {
+    "command": "seed",
+    "exit_code": 0,
+    "result": {
+      "users": [
+        1,
+        2,
+        3
+      ],
+      "rooms": 8,
+      "listings": 9,
+      "current_first_listing": 9
+    }
+  },
+  {
+    "command": "list --status OPEN",
+    "exit_code": 0,
+    "result": [
+      {
+        "listing_id": 7,
+        "room_id": 7,
+        "creator_user_id": 1,
+        "weekly_rent": "280.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Ashfield",
+        "is_furnished": true,
+        "has_ensuite": true,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 6,
+        "room_id": 6,
+        "creator_user_id": 2,
+        "weekly_rent": "290.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Marrickville",
+        "is_furnished": false,
+        "has_ensuite": false,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 4,
+        "room_id": 4,
+        "creator_user_id": 2,
+        "weekly_rent": "310.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Redfern",
+        "is_furnished": false,
+        "has_ensuite": true,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 9,
+        "room_id": 1,
+        "creator_user_id": 1,
+        "weekly_rent": "325.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Newtown",
+        "is_furnished": true,
+        "has_ensuite": true,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 8,
+        "room_id": 8,
+        "creator_user_id": 2,
+        "weekly_rent": "330.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Burwood",
+        "is_furnished": false,
+        "has_ensuite": false,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 5,
+        "room_id": 5,
+        "creator_user_id": 1,
+        "weekly_rent": "340.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Camperdown",
+        "is_furnished": true,
+        "has_ensuite": false,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 2,
+        "room_id": 2,
+        "creator_user_id": 2,
+        "weekly_rent": "350.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Glebe",
+        "is_furnished": false,
+        "has_ensuite": false,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      },
+      {
+        "listing_id": 3,
+        "room_id": 3,
+        "creator_user_id": 1,
+        "weekly_rent": "380.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "room_type": "PRIVATE",
+        "suburb": "Ultimo",
+        "is_furnished": true,
+        "has_ensuite": false,
+        "smoking_policy": "NOT_ALLOWED",
+        "pet_policy": "NOT_ALLOWED",
+        "allocation_status": "AVAILABLE"
+      }
+    ]
+  },
+  {
+    "command": "show 9",
+    "exit_code": 0,
+    "result": {
+      "room_id": 1,
+      "room_type": "PRIVATE",
+      "property_type": "APARTMENT",
+      "number_rooms": 3,
+      "is_furnished": true,
+      "has_ensuite": true,
+      "car_spots": 0,
+      "num_housemates": 2,
+      "smoking_policy": "NOT_ALLOWED",
+      "pet_policy": "NOT_ALLOWED",
+      "description": "Synthetic example: furnished private room in a shared apartment.",
+      "street_number": "10",
+      "street_name": "Example Street",
+      "suburb": "Newtown",
+      "state": "NSW",
+      "postcode": "2042",
+      "allocation_status": "AVAILABLE",
+      "listing_id": 9,
+      "creator_user_id": 1,
+      "weekly_rent": "325.00",
+      "available_from": "2026-11-01",
+      "listing_date": "2026-10-14",
+      "status": "OPEN"
+    }
+  },
+  {
+    "command": "--user-id 1 publish examples/new_room.json --rent 360 --available-from 2026-11-01",
+    "exit_code": 0,
+    "result": {
+      "room_id": 9,
+      "listing_id": 10
+    }
+  },
+  {
+    "command": "--user-id 1 update 9 --rent 335 --available-from 2026-11-05",
+    "exit_code": 0,
+    "result": {
+      "listing_id": 9,
+      "room_id": 1,
+      "creator_user_id": 1,
+      "weekly_rent": "335.00",
+      "available_from": "2026-11-05",
+      "listing_date": "2026-10-14",
+      "status": "OPEN"
+    }
+  },
+  {
+    "command": "--user-id 1 update-room 1 examples/new_room.json",
+    "exit_code": 0,
+    "result": {
+      "room_id": 1,
+      "room_type": "PRIVATE",
+      "property_type": "APARTMENT",
+      "number_rooms": 3,
+      "is_furnished": true,
+      "has_ensuite": false,
+      "car_spots": 0,
+      "num_housemates": 2,
+      "smoking_policy": "NOT_ALLOWED",
+      "pet_policy": "NOT_ALLOWED",
+      "description": "Synthetic example of a private room near campus.",
+      "street_number": "14",
+      "street_name": "Example Street",
+      "suburb": "Newtown",
+      "state": "NSW",
+      "postcode": "2042",
+      "allocation_status": "AVAILABLE"
+    }
+  },
+  {
+    "command": "--user-id 1 close 9",
+    "exit_code": 0,
+    "result": {
+      "listing_id": 9,
+      "room_id": 1,
+      "creator_user_id": 1,
+      "weekly_rent": "335.00",
+      "available_from": "2026-11-05",
+      "listing_date": "2026-10-14",
+      "status": "CLOSED"
+    }
+  },
+  {
+    "command": "--user-id 1 relist 1 --rent 340 --available-from 2026-11-05",
+    "exit_code": 0,
+    "result": {
+      "listing_id": 11
+    }
+  }
+]
