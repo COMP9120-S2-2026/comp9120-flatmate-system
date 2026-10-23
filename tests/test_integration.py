@@ -246,9 +246,9 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(name,'Olivia Chen')
             uid=self.conn.execute('SELECT user_id FROM preference_profile LIMIT 1').fetchone()['user_id']
             output=StringIO()
-            with patch('builtins.input',side_effect=['1','','0','0']), redirect_stdout(output):
-                menu.view_preference_profiles(conn,uid)
-                menu.main_menu(conn,1,name)
+            with patch('builtins.input',side_effect=['1','0','0','0']), redirect_stdout(output):
+                menu.view_preference_profiles(conn,uid,None)
+                menu.main_menu(conn,1,name,None)
             self.assertIn('Minimum weekly rent:',output.getvalue())
             self.assertIn('6. Manage Applications (Owner)',output.getvalue())
 

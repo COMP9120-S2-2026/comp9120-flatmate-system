@@ -1,73 +1,68 @@
-# COMP9120 Flatmate Matching System
+# HouseMatch — COMP9120 Group 34
 
-Group 34 — Semester 2, 2026: Yijian Mei (David), Max, Yu-Han Chang (John).
+Final integration candidate combining `feature/housematch-clean` at `fc4531e` (including restored PR #5) with compatible advertiser services and supporting files from `main` at `865f265`.
 
-## Compatibility-only revision
+## Setup
 
-This revision fixes the older A/C Python modules to work with Max's existing ten-table database. It does **not** change the shared schema, triggers, SQL queries, sample data, transaction examples or original grouped menu.
+Requires Python 3.10+ and PostgreSQL 15+. Create a new, empty database for this candidate. Do not initialise over existing tables or use the archived SQL.
 
-Read [COMPATIBILITY_REVIEW.md](docs/COMPATIBILITY_REVIEW.md) for the precise scope. The earlier broad integration proposal has been withdrawn from this PR.
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
 
-## VS Code and pgAdmin setup
+On Windows use `py -m venv .venv` and `.venv\Scripts\Activate.ps1`.
+Copy `config.example.json` to `config.json` and enter your local connection details. The local file is ignored by Git. Alternatively set `DATABASE_URL` when no local config exists.
 
-Requires Python 3.10+ and PostgreSQL 15+.
+```sh
+python run.py init
+python run.py seed
+python run.py list --status OPEN
+```
 
-1. Open this repository folder in VS Code.
-2. Create the environment and install dependencies:
+Initialisation uses `housematch_schema.sql` then `housematch_triggers.sql`; seed loads `housematch_sample_data.sql`. Seed once into empty tables. These files and `housematch_transactions.sql` are unchanged from both source branches. The schema has ten tables.
 
-~~~powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-~~~
+## Run the prototype
 
-3. Copy config.example.json to config.json if it does not exist. Edit your local host, port, dbname, user and password. Never commit credentials or edit the example with a real password.
-4. Create a new empty database in pgAdmin (for example housematch_compat), and use that name in config.json.
-5. Initialise and seed once:
+### Grouped interactive menu
 
-~~~powershell
-.\.venv\Scripts\python.exe run.py init
-.\.venv\Scripts\python.exe run.py seed
-.\.venv\Scripts\python.exe run.py list --status OPEN
-~~~
+```sh
+python housematch_cli.py
+```
 
-Both initialisation and manual SQL setup now use the root housematch_schema.sql and housematch_triggers.sql. Sample data come from housematch_sample_data.sql: 14 users, 10 properties, 12 rooms and 12 listings.
+Set `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PORT` at the top of this file to the same database configured above. This interface prompts for a password; it does not read `config.json`. `CURRENT_USER_ID` selects a synthetic demo identity, not authentication. The default ID 5 is Ava Thompson. User 7 has seeded preference profiles; user 1 owns listing 1. Restart with the appropriate demo ID to demonstrate owner/applicant workflows.
 
-Do not initialise over existing tables. Databases made with the earlier broad PR version need a separate fresh database; no automatic migration is included.
+The menu supports preference creation/selection, profile-based search, saved listings, bookings/cancellation/rebooking, applications and owner acceptance/rejection. Select an active profile before searching. The default user must first create a profile with at least one matching suburb. Active selection lasts for the session.
 
-In pgAdmin, open Query Tool on the same database and run sql/90_pgadmin_queries.sql.
+### Advertiser and application commands
 
-## Two entry points
+The separate compatible service interface preserves publishing, editing, closing and relisting:
 
-- **run.py**: the repaired A/C service command line; uses config.json, or DATABASE_URL if no local config exists.
-- **housematch_cli.py**: Max's original grouped menu, preserved unchanged. It prompts for a password and uses the DB_HOST/DB_NAME/DB_USER/DB_PORT constants at the top of that file. Set these to the same database if using both entry points. Never hard-code a password.
-
-The grouped menu in the reviewed main commit implements preference viewing; its other unfinished options remain placeholders. This revision does not claim to finish those features.
-
-## A/C command examples
-
-~~~powershell
-python run.py --user-id 1 publish examples/new_room.json --rent 360 --available-from 2026-11-01 --housemates 2
-python run.py --user-id 2 applications
-python run.py --user-id 1 applicants 1
-python run.py --user-id 1 accept 1
+```sh
 python run.py --help
-~~~
+python run.py --user-id 1 publish examples/new_room.json --rent 360 --available-from 2026-11-01 --housemates 2
+python run.py --user-id 1 applicants 1
+python run.py --user-id 2 applications
+```
 
-Use IDs returned by the program and the appropriate listing owner. The accept command modifies data, so run demonstrations on a disposable database. User IDs represent demo identities, not authentication.
+Use returned IDs and the correct owner. Both interfaces share the same database, but have distinct connection configuration and transaction implementations. Keep their tests separate. Manual `close` changes listing status only; acceptance also cancels viewings and rejects competing applications. The service rejection command permits rejecting a pending application on a non-OPEN listing; the grouped menu requires OPEN. These existing behaviours have not been redesigned.
 
-Application statuses remain PENDING, ACCEPTED and REJECTED. Withdrawal is not offered by the command line; the old Python withdrawal function now reports that it is unsupported rather than writing an invalid status. Reapplication after rejection remains prohibited by the original uniqueness constraint.
+## Verify in a disposable database
 
-## Tests and evidence
-
-~~~powershell
-$env:TEST_DATABASE_URL = 'postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/YOUR_TEST_DATABASE'
+```sh
+export TEST_DATABASE_URL='postgresql://YOUR_USER:YOUR_PASSWORD@localhost:5432/YOUR_TEST_DATABASE'
 python tools/run_verification.py
-~~~
+```
 
-Use a test role allowed to create schemas. Tests create and remove uniquely named schemas, not application tables. [Current results](docs/ALIGNMENT_TEST_RESULTS.md) replace the earlier broad-PR results.
+On PowerShell set `$env:TEST_DATABASE_URL` instead. Tests create and remove uniquely named schemas; the test role needs permission to create schemas. Never use a production database. The verification command updates evidence in `docs/ALIGNMENT_TEST_RESULTS.md` and `docs/alignment_test_results.json`.
 
-Earlier Member A reports, diagrams and test evidence under docs are historical, not current whole-system documentation. Superseded SQL and member implementations are retained under archive/pre-integration and must not be used for setup.
+The integrated suite covers advertiser services, configuration, the original 51-case SQL suite, restored grouped CLI acceptance (including injected failure and two competing sessions), profile/search/save operations, booking cancellation/rebooking and application submission. Five additional manual database concurrency scenarios are documented in `housematch_concurrency_tests.sql`; they are not automatically run by the Python suite.
 
-## Scope
+`housematch_queries.sql` contains eight representative queries. `housematch_transactions.sql` contains executable examples that COMMIT changes and assume particular sample IDs: use a disposable demo database, not as a setup script. Run query evidence on a fresh seed before transaction demonstrations.
 
-No new preference/search/booking service, rescheduling, conditional unique indexes, mandatory-profile triggers, status domains, authentication or web interface are added. Remaining report/schema differences need group review rather than silently changing the database.
+## Scope and evidence
+
+Preserved domains: listing OPEN/PAUSED/CLOSED; application PENDING/ACCEPTED/REJECTED. No withdrawal, repeat application to the same listing, rescheduling, household membership, room occupancy or authentication is added. Mandatory profile creation and a listing for every room are not database-enforced. The OPEN-application trigger guards submission; acceptance's OPEN/owner checks are in the application workflow. Saved-listing ranks exist in SQL; the grouped menu orders saved listings by rent.
+
+Historical Member A reports/diagrams, `docs/TEST_RESULTS.md`, older JSON evidence and `archive/pre-integration` describe earlier versions and are not final whole-project evidence. Use the fresh alignment results and the agreed final report. The submission report, participation statement, poster and video are coordinated separately.
