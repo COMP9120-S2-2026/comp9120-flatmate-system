@@ -1,0 +1,439 @@
+[
+  {
+    "arguments": [
+      "init"
+    ],
+    "exit_code": 0,
+    "result": {
+      "created": "Shared schema and triggers"
+    }
+  },
+  {
+    "arguments": [
+      "seed"
+    ],
+    "exit_code": 0,
+    "result": {
+      "users": 14,
+      "properties": 10,
+      "rooms": 12,
+      "listings": 12
+    }
+  },
+  {
+    "arguments": [
+      "--user-id",
+      "1",
+      "publish",
+      "examples/new_room.json",
+      "--rent",
+      "360",
+      "--available-from",
+      "2026-11-01",
+      "--housemates",
+      "2"
+    ],
+    "exit_code": 0,
+    "result": {
+      "room_id": 13,
+      "listing_id": 13
+    }
+  },
+  {
+    "arguments": [
+      "show",
+      "13"
+    ],
+    "exit_code": 0,
+    "result": {
+      "property_id": 11,
+      "street_number": "42",
+      "street_name": "Example Street",
+      "suburb": "Newtown",
+      "state": "NSW",
+      "postcode": "2042",
+      "unit_number": null,
+      "property_type": "Apartment",
+      "total_rooms": 3,
+      "car_spots": 0,
+      "smoking_policy": "No smoking",
+      "pet_friendly": false,
+      "room_id": 13,
+      "room_type": "Private",
+      "num_roommates": 0,
+      "is_furnished": true,
+      "has_ensuite": false,
+      "description": "Synthetic room in a new property",
+      "listing_id": 13,
+      "creator_user_id": 1,
+      "weekly_rent": "360.00",
+      "available_from": "2026-11-01",
+      "listing_date": "2026-10-23",
+      "status": "OPEN",
+      "num_housemates": 2
+    }
+  },
+  {
+    "arguments": [
+      "--user-id",
+      "2",
+      "update",
+      "13",
+      "--rent",
+      "999",
+      "--available-from",
+      "2026-11-02"
+    ],
+    "exit_code": 1,
+    "result": "Operation failed: Only the listing creator may manage this listing."
+  },
+  {
+    "arguments": [
+      "show",
+      "13"
+    ],
+    "exit_code": 0,
+    "result": {
+      "property_id": 11,
+      "street_number": "42",
+      "street_name": "Example Street",
+      "suburb": "Newtown",
+      "state": "NSW",
+      "postcode": "2042",
+      "unit_number": null,
+      "property_type": "Apartment",
+      "total_rooms": 3,
+      "car_spots": 0,
+      "smoking_policy": "No smoking",
+      "pet_friendly": false,
+      "room_id": 13,
+      "room_type": "Private",
+      "num_roommates": 0,
+      "is_furnished": true,
+      "has_ensuite": false,
+      "description": "Synthetic room in a new property",
+      "listing_id": 13,
+      "creator_user_id": 1,
+      "weekly_rent": "360.00",
+      "available_from": "2026-11-01",
+      "listing_date": "2026-10-23",
+      "status": "OPEN",
+      "num_housemates": 2
+    }
+  },
+  {
+    "arguments": [
+      "--user-id",
+      "1",
+      "update",
+      "13",
+      "--rent",
+      "375",
+      "--available-from",
+      "2026-11-05"
+    ],
+    "exit_code": 0,
+    "result": {
+      "listing_id": 13,
+      "room_id": 13,
+      "creator_user_id": 1,
+      "weekly_rent": "375.00",
+      "available_from": "2026-11-05",
+      "listing_date": "2026-10-23",
+      "status": "OPEN",
+      "num_housemates": 2
+    }
+  },
+  {
+    "arguments": [
+      "--user-id",
+      "1",
+      "describe-room",
+      "13",
+      "Verified advertiser demo room"
+    ],
+    "exit_code": 0,
+    "result": {
+      "room_id": 13,
+      "room_type": "Private",
+      "num_roommates": 0,
+      "is_furnished": true,
+      "has_ensuite": false,
+      "description": "Verified advertiser demo room",
+      "property_id": 11
+    }
+  },
+  {
+    "arguments": [
+      "show",
+      "13"
+    ],
+    "exit_code": 0,
+    "result": {
+      "property_id": 11,
+      "street_number": "42",
+      "street_name": "Example Street",
+      "suburb": "Newtown",
+      "state": "NSW",
+      "postcode": "2042",
+      "unit_number": null,
+      "property_type": "Apartment",
+      "total_rooms": 3,
+      "car_spots": 0,
+      "smoking_policy": "No smoking",
+      "pet_friendly": false,
+      "room_id": 13,
+      "room_type": "Private",
+      "num_roommates": 0,
+      "is_furnished": true,
+      "has_ensuite": false,
+      "description": "Verified advertiser demo room",
+      "listing_id": 13,
+      "creator_user_id": 1,
+      "weekly_rent": "375.00",
+      "available_from": "2026-11-05",
+      "listing_date": "2026-10-23",
+      "status": "OPEN",
+      "num_housemates": 2
+    }
+  },
+  {
+    "arguments": [
+      "--user-id",
+      "1",
+      "close",
+      "13"
+    ],
+    "exit_code": 0,
+    "result": {
+      "listing_id": 13,
+      "room_id": 13,
+      "creator_user_id": 1,
+      "weekly_rent": "375.00",
+      "available_from": "2026-11-05",
+      "listing_date": "2026-10-23",
+      "status": "CLOSED",
+      "num_housemates": 2
+    }
+  },
+  {
+    "arguments": [
+      "list",
+      "--status",
+      "OPEN"
+    ],
+    "exit_code": 0,
+    "result": [
+      {
+        "listing_id": 12,
+        "room_id": 12,
+        "creator_user_id": 3,
+        "weekly_rent": "295.00",
+        "available_from": "2026-11-25",
+        "listing_date": "2026-10-15",
+        "status": "OPEN",
+        "num_housemates": 4,
+        "room_type": "Shared",
+        "is_furnished": true,
+        "has_ensuite": false,
+        "suburb": "Forest Lodge",
+        "smoking_policy": "No smoking",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 2,
+        "room_id": 2,
+        "creator_user_id": 1,
+        "weekly_rent": "340.00",
+        "available_from": "2026-11-05",
+        "listing_date": "2026-10-11",
+        "status": "OPEN",
+        "num_housemates": 2,
+        "room_type": "Private",
+        "is_furnished": false,
+        "has_ensuite": false,
+        "suburb": "Glebe",
+        "smoking_policy": "No smoking",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 10,
+        "room_id": 10,
+        "creator_user_id": 2,
+        "weekly_rent": "345.00",
+        "available_from": "2026-12-10",
+        "listing_date": "2026-10-15",
+        "status": "OPEN",
+        "num_housemates": 1,
+        "room_type": "Private",
+        "is_furnished": false,
+        "has_ensuite": false,
+        "suburb": "Enmore",
+        "smoking_policy": "No smoking",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 4,
+        "room_id": 4,
+        "creator_user_id": 3,
+        "weekly_rent": "360.00",
+        "available_from": "2026-12-01",
+        "listing_date": "2026-10-13",
+        "status": "OPEN",
+        "num_housemates": 4,
+        "room_type": "Private",
+        "is_furnished": false,
+        "has_ensuite": false,
+        "suburb": "Forest Lodge",
+        "smoking_policy": "No smoking",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 9,
+        "room_id": 9,
+        "creator_user_id": 3,
+        "weekly_rent": "370.00",
+        "available_from": "2026-11-18",
+        "listing_date": "2026-10-12",
+        "status": "OPEN",
+        "num_housemates": 3,
+        "room_type": "Private",
+        "is_furnished": true,
+        "has_ensuite": false,
+        "suburb": "Camperdown",
+        "smoking_policy": "Outdoor only",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 3,
+        "room_id": 3,
+        "creator_user_id": 2,
+        "weekly_rent": "385.00",
+        "available_from": "2026-11-15",
+        "listing_date": "2026-10-12",
+        "status": "OPEN",
+        "num_housemates": 3,
+        "room_type": "Private",
+        "is_furnished": true,
+        "has_ensuite": false,
+        "suburb": "Newtown",
+        "smoking_policy": "Outdoor only",
+        "pet_friendly": false
+      },
+      {
+        "listing_id": 8,
+        "room_id": 8,
+        "creator_user_id": 1,
+        "weekly_rent": "390.00",
+        "available_from": "2026-12-05",
+        "listing_date": "2026-10-14",
+        "status": "OPEN",
+        "num_housemates": 1,
+        "room_type": "Private",
+        "is_furnished": true,
+        "has_ensuite": false,
+        "suburb": "Annandale",
+        "smoking_policy": "No smoking",
+        "pet_friendly": false
+      },
+      {
+        "listing_id": 1,
+        "room_id": 1,
+        "creator_user_id": 1,
+        "weekly_rent": "430.00",
+        "available_from": "2026-11-01",
+        "listing_date": "2026-10-10",
+        "status": "OPEN",
+        "num_housemates": 2,
+        "room_type": "Private",
+        "is_furnished": true,
+        "has_ensuite": true,
+        "suburb": "Glebe",
+        "smoking_policy": "No smoking",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 6,
+        "room_id": 6,
+        "creator_user_id": 5,
+        "weekly_rent": "520.00",
+        "available_from": "2026-11-10",
+        "listing_date": "2026-10-05",
+        "status": "OPEN",
+        "num_housemates": 2,
+        "room_type": "Private",
+        "is_furnished": true,
+        "has_ensuite": true,
+        "suburb": "Surry Hills",
+        "smoking_policy": "Outdoor only",
+        "pet_friendly": true
+      },
+      {
+        "listing_id": 11,
+        "room_id": 11,
+        "creator_user_id": 4,
+        "weekly_rent": "550.00",
+        "available_from": "2026-12-01",
+        "listing_date": "2026-10-15",
+        "status": "OPEN",
+        "num_housemates": 2,
+        "room_type": "Private",
+        "is_furnished": true,
+        "has_ensuite": true,
+        "suburb": "Alexandria",
+        "smoking_policy": "No smoking",
+        "pet_friendly": true
+      }
+    ]
+  },
+  {
+    "arguments": [
+      "--user-id",
+      "1",
+      "relist",
+      "13",
+      "--rent",
+      "380",
+      "--available-from",
+      "2026-11-06"
+    ],
+    "exit_code": 0,
+    "result": {
+      "listing_id": 14
+    }
+  },
+  {
+    "arguments": [
+      "show",
+      "14"
+    ],
+    "exit_code": 0,
+    "result": {
+      "property_id": 11,
+      "street_number": "42",
+      "street_name": "Example Street",
+      "suburb": "Newtown",
+      "state": "NSW",
+      "postcode": "2042",
+      "unit_number": null,
+      "property_type": "Apartment",
+      "total_rooms": 3,
+      "car_spots": 0,
+      "smoking_policy": "No smoking",
+      "pet_friendly": false,
+      "room_id": 13,
+      "room_type": "Private",
+      "num_roommates": 0,
+      "is_furnished": true,
+      "has_ensuite": false,
+      "description": "Verified advertiser demo room",
+      "listing_id": 14,
+      "creator_user_id": 1,
+      "weekly_rent": "380.00",
+      "available_from": "2026-11-06",
+      "listing_date": "2026-10-23",
+      "status": "OPEN",
+      "num_housemates": 0
+    }
+  }
+]
