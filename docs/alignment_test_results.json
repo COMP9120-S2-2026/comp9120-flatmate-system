@@ -1,6 +1,6 @@
 {
-  "server_version": "18.4",
-  "tests_run": 26,
+  "server_version": "16.15",
+  "tests_run": 33,
   "failures": 0,
   "errors": 0,
   "skipped": 0,

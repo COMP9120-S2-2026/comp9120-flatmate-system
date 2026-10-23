@@ -31,7 +31,7 @@ def main():
     (evidence_dir/'ALIGNMENT_TEST_RESULTS.md').write_text('# Integrated verification results\n\n'
         +'Recorded verification on '+recorded_date+' using PostgreSQL '+version+'.\n\n'
         +f"Tests run: {result.testsRun}; failures: {len(result.failures)}; errors: {len(result.errors)}; skipped: {len(result.skipped)}.\n\n"
-        +'The run covers A/C compatibility with the unchanged shared schema, original SQL tests, rollback and competing acceptances. No new B features or database rules are included.\n\n'
+        +'The run covers the unchanged ten-table schema, advertiser/service compatibility, the original 51-case SQL suite, and the restored grouped CLI: acceptance, full rollback, competing acceptances, profile/search/save, booking cancellation/rebooking and application submission. The five manual SQL concurrency scenarios are not included in this automated run.\n\n'
         +'```text\n'+output.getvalue()+'```\n',encoding='utf-8')
     print(output.getvalue())
     print(json.dumps(evidence))

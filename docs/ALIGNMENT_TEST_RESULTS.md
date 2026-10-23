@@ -1,12 +1,19 @@
 # Integrated verification results
 
-Recorded verification on 19 October 2026 using PostgreSQL 18.4.
+Recorded verification on 23 October 2026 using PostgreSQL 16.15.
 
-Tests run: 26; failures: 0; errors: 0; skipped: 0.
+Tests run: 33; failures: 0; errors: 0; skipped: 0.
 
-The run covers A/C compatibility with the unchanged shared schema, original SQL tests, rollback and competing acceptances. No new B features or database rules are included.
+The run covers the unchanged ten-table schema, advertiser/service compatibility, the original 51-case SQL suite, and the restored grouped CLI: acceptance, full rollback, competing acceptances, profile/search/save, booking cancellation/rebooking and application submission. The five manual SQL concurrency scenarios are not included in this automated run.
 
 ```text
+test_accept_commits_all_effects (test_grouped_cli.GroupedCliTests.test_accept_commits_all_effects) ... ok
+test_book_cancel_rebook_and_apply (test_grouped_cli.GroupedCliTests.test_book_cancel_rebook_and_apply) ... ok
+test_closed_listing_and_processed_application_are_rejected (test_grouped_cli.GroupedCliTests.test_closed_listing_and_processed_application_are_rejected) ... ok
+test_competing_cli_acceptances_have_one_winner (test_grouped_cli.GroupedCliTests.test_competing_cli_acceptances_have_one_winner) ... ok
+test_failure_at_final_step_rolls_back_every_table (test_grouped_cli.GroupedCliTests.test_failure_at_final_step_rolls_back_every_table) ... ok
+test_invalid_owner_missing_application_and_cancel_change_nothing (test_grouped_cli.GroupedCliTests.test_invalid_owner_missing_application_and_cancel_change_nothing) ... ok
+test_profile_creation_search_and_save_remove (test_grouped_cli.GroupedCliTests.test_profile_creation_search_and_save_remove) ... ok
 test_accept_failure_rolls_back_all_updates (test_integration.IntegrationTests.test_accept_failure_rolls_back_all_updates) ... ok
 test_accept_matches_original_sql_workflow (test_integration.IntegrationTests.test_accept_matches_original_sql_workflow) ... ok
 test_accept_owner_check (test_integration.IntegrationTests.test_accept_owner_check) ... ok
@@ -35,7 +42,7 @@ test_local_config_overrides_environment (test_local_config.LocalConfigTests.test
 test_placeholder_rejected (test_local_config.LocalConfigTests.test_placeholder_rejected) ... ok
 
 ----------------------------------------------------------------------
-Ran 26 tests in 1.593s
+Ran 33 tests in 0.635s
 
 OK
 ```
