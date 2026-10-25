@@ -1,4 +1,6 @@
-# HouseMatch — COMP9120 Group 34
+# HouseMatch - COMP9120 Group 34
+
+Github Repository Link: https://github.com/COMP9120-S2-2026/comp9120-flatmate-system.git
 
 Final integration candidate combining `feature/housematch-clean` at `fc4531e` (including restored PR #5) with compatible advertiser services and supporting files from `main` at `865f265`.
 
