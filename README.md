@@ -4,6 +4,25 @@ Github Repository Link: https://github.com/COMP9120-S2-2026/comp9120-flatmate-sy
 
 Final integration candidate combining `feature/housematch-clean` at `fc4531e` (including restored PR #5) with compatible advertiser services and supporting files from `main` at `865f265`.
 
+## Main Prototype — Which Files to Run
+
+The primary HouseMatch prototype demonstrated in our report and video uses the following four files:
+
+1. `housematch_schema.sql` — Creates the 10 database tables and constraints.
+2. `housematch_triggers.sql` — Creates the database triggers enforcing business rules.
+3. `housematch_sample_data.sql` — Populates the database with demonstration data.
+4. `housematch_cli.py` — Runs the interactive Python application.
+
+**To run the main prototype:**
+
+1. Create a new, empty PostgreSQL database named `housematch`.
+2. Execute the three SQL files in the order listed above.
+3. Install the Python dependency using `pip install -r requirements.txt`.
+4. Check the database connection settings at the top of `housematch_cli.py`.
+5. Run `python housematch_cli.py` and enter your PostgreSQL password when prompted.
+
+Other repository files contain additional services, automated tests, documentation and development history. They are not required to run the main interactive CLI demonstrated in the project report and video.
+
 ## Setup
 
 Requires Python 3.10+ and PostgreSQL 15+. Create a new, empty database for this candidate. Do not initialise over existing tables or use the archived SQL.
